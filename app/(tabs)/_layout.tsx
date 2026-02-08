@@ -7,26 +7,33 @@ import { useApp } from '../../hooks/useApp';
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
-  const { userProfile } = useApp();
+  const { userProfile, isLoggedIn } = useApp();
   const role = userProfile?.role;
+  const showTabs = isLoggedIn && !!role;
 
-  const tabBarStyle = {
-    height: Platform.select({
-      ios: insets.bottom + 60,
-      android: insets.bottom + 60,
-      default: 70,
-    }),
-    paddingTop: 8,
-    paddingBottom: Platform.select({
-      ios: insets.bottom + 8,
-      android: insets.bottom + 8,
-      default: 8,
-    }),
-    paddingHorizontal: 16,
-    backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  };
+  const tabBarStyle = showTabs
+    ? {
+        height: Platform.select({
+          ios: insets.bottom + 56,
+          android: insets.bottom + 56,
+          default: 60,
+        }),
+        paddingTop: 6,
+        paddingBottom: Platform.select({
+          ios: insets.bottom + 6,
+          android: insets.bottom + 6,
+          default: 6,
+        }),
+        backgroundColor: colors.surface,
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 4,
+      }
+    : { display: 'none' as const };
 
   return (
     <Tabs
@@ -36,80 +43,80 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textTertiary,
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '500',
+          fontSize: 11,
+          fontWeight: '600',
+          marginTop: -2,
+        },
+        tabBarIconStyle: {
+          marginBottom: -2,
         },
       }}
     >
+      {/* Always rendered but conditionally shown — Expo Router needs all tabs declared */}
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
+          title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="dashboard" size={size} color={color} />
+            <MaterialIcons name="home" size={22} color={color} />
           ),
         }}
       />
 
-      {role === 'BUYER' && (
-        <Tabs.Screen
-          name="marketplace"
-          options={{
-            title: 'Marketplace',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialIcons name="shopping-bag" size={size} color={color} />
-            ),
-          }}
-        />
-      )}
+      <Tabs.Screen
+        name="marketplace"
+        options={{
+          title: 'Market',
+          href: role === 'BUYER' ? '/(tabs)/marketplace' : null,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="storefront" size={22} color={color} />
+          ),
+        }}
+      />
 
-      {role === 'SUPPLIER' && (
-        <Tabs.Screen
-          name="products"
-          options={{
-            title: 'Products',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialIcons name="inventory" size={size} color={color} />
-            ),
-          }}
-        />
-      )}
+      <Tabs.Screen
+        name="products"
+        options={{
+          title: 'Products',
+          href: role === 'SUPPLIER' ? '/(tabs)/products' : null,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="inventory-2" size={22} color={color} />
+          ),
+        }}
+      />
 
-      {role && (
-        <Tabs.Screen
-          name="purchase-orders"
-          options={{
-            title: 'Orders',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialIcons name="receipt-long" size={size} color={color} />
-            ),
-          }}
-        />
-      )}
+      <Tabs.Screen
+        name="purchase-orders"
+        options={{
+          title: 'Orders',
+          href: showTabs ? '/(tabs)/purchase-orders' : null,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="receipt-long" size={22} color={color} />
+          ),
+        }}
+      />
 
-      {role && (
-        <Tabs.Screen
-          name="invoices"
-          options={{
-            title: 'Invoices',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialIcons name="request-quote" size={size} color={color} />
-            ),
-          }}
-        />
-      )}
+      <Tabs.Screen
+        name="invoices"
+        options={{
+          title: 'Invoices',
+          href: showTabs ? '/(tabs)/invoices' : null,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="description" size={22} color={color} />
+          ),
+        }}
+      />
 
-      {role && (
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: 'Profile',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialIcons name="account-circle" size={size} color={color} />
-            ),
-          }}
-        />
-      )}
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          href: showTabs ? '/(tabs)/profile' : null,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="person" size={22} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
