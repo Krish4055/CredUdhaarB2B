@@ -23,8 +23,10 @@ export const generateMockSuppliers = (): Business[] => [
       accountNumber: '****5678',
       ifscCode: 'HDFC0001234',
       accountHolderName: 'Raj Textiles Pvt Ltd',
+      bankName: 'HDFC Bank',
     },
     isVerified: true,
+    verificationStatus: 'VERIFIED',
     rating: 4.8,
     reviewCount: 245,
     createdAt: new Date('2023-01-15').toISOString(),
@@ -50,8 +52,10 @@ export const generateMockSuppliers = (): Business[] => [
       accountNumber: '****1234',
       ifscCode: 'ICIC0001111',
       accountHolderName: 'Global Electronics Hub',
+      bankName: 'ICICI Bank',
     },
     isVerified: true,
+    verificationStatus: 'VERIFIED',
     rating: 4.5,
     reviewCount: 132,
     createdAt: new Date('2023-03-20').toISOString(),
@@ -172,4 +176,53 @@ export const getDaysUntilDue = (dueDate: string): number => {
   const diffTime = due.getTime() - now.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
+};
+
+export const calculateCreditScore = (params: {
+  onTimePaymentRate: number;
+  annualTurnover: Business['annualTurnover'];
+  transactionHistoryMonths: number;
+  businessAgeYears: number;
+}): number => {
+  const onTimeScore = Math.min(100, Math.max(0, params.onTimePaymentRate));
+
+  const turnoverPoints: Record<Business['annualTurnover'], number> = {
+    '<25L': 20,
+    '25L-1Cr': 40,
+    '1-5Cr': 60,
+    '5-20Cr': 80,
+    '>20Cr': 100,
+  };
+
+  const historyPoints = params.transactionHistoryMonths >= 12 ? 100
+    : params.transactionHistoryMonths >= 6 ? 50
+    : params.transactionHistoryMonths >= 3 ? 25
+    : 0;
+
+  const businessAgePoints = params.businessAgeYears >= 10 ? 100
+    : params.businessAgeYears >= 5 ? 50
+    : params.businessAgeYears >= 1 ? 20
+    : 0;
+
+  const score =
+    (onTimeScore * 0.4) +
+    (turnoverPoints[params.annualTurnover] * 0.3) +
+    (historyPoints * 0.2) +
+    (businessAgePoints * 0.1);
+
+  return Math.round(score);
+};
+
+export const calculateDefaultCreditLine = (annualTurnover: Business['annualTurnover'], creditScore: number): number => {
+  const turnoverToAmount: Record<Business['annualTurnover'], number> = {
+    '<25L': 2500000,
+    '25L-1Cr': 10000000,
+    '1-5Cr': 50000000,
+    '5-20Cr': 200000000,
+    '>20Cr': 300000000,
+  };
+
+  const turnoverAmount = turnoverToAmount[annualTurnover];
+  const creditLine = (turnoverAmount / 3) * (creditScore / 100);
+  return Math.round(creditLine);
 };

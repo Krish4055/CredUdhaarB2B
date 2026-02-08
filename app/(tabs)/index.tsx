@@ -88,6 +88,9 @@ export default function HomeScreen() {
 
   const overdueInvoices = myInvoices.filter((inv) => inv.status === 'OVERDUE');
   const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + (inv.amount - inv.amountPaid), 0);
+  const outstandingAmount = myInvoices.reduce((sum, inv) => sum + (inv.amount - inv.amountPaid), 0);
+  const activeBuyerCount = new Set(myPOs.map((po) => po.buyerId)).size;
+  const activeSupplierCount = new Set(myPOs.map((po) => po.supplierId)).size;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -96,55 +99,128 @@ export default function HomeScreen() {
         <View style={styles.dashboardHeader}>
           <View>
             <Text style={styles.businessName}>{userProfile.business.legalName}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+            <View style={styles.headerMeta}>
               {userProfile.business.isVerified && (
                 <MaterialIcons name="verified" size={16} color={colors.verified} />
               )}
               <Text style={styles.businessType}>{userProfile.business.businessType}</Text>
+              <Badge
+                label={userProfile.business.verificationStatus}
+                variant={userProfile.business.verificationStatus === 'VERIFIED' ? 'success' : userProfile.business.verificationStatus === 'REJECTED' ? 'error' : 'warning'}
+                small
+              />
             </View>
           </View>
-          <Pressable onPress={() => router.push('/profile')}>
-            <MaterialIcons name="account-circle" size={40} color={colors.primary} />
-          </Pressable>
+          <View style={styles.headerActions}>
+            <Pressable onPress={() => router.push('/notifications')} style={styles.iconButton}>
+              <MaterialIcons name="notifications" size={22} color={colors.primary} />
+            </Pressable>
+            <Pressable onPress={() => router.push('/profile')} style={styles.iconButton}>
+              <MaterialIcons name="account-circle" size={36} color={colors.primary} />
+            </Pressable>
+          </View>
         </View>
 
         {/* Role Badge */}
         <Badge label={isSupplier ? '🏭 Supplier Mode' : '🛒 Buyer Mode'} variant="info" />
 
-        {/* Stats */}
-        <View style={styles.statsGrid}>
+        {/* Summary Card */}
+        <View style={styles.summaryCard}>
+          <View style={styles.summaryRow}>
+            <View>
+              <Text style={styles.summaryLabel}>Outstanding</Text>
+              <Text style={styles.summaryValue}>{formatCurrency(outstandingAmount)}</Text>
+            </View>
+            <View style={styles.summaryDivider} />
+            <View>
+              <Text style={styles.summaryLabel}>Overdue</Text>
+              <Text style={[styles.summaryValue, overdueAmount > 0 && styles.summaryDanger]}>
+                {formatCurrency(overdueAmount)}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.summaryFoot}>
+            <MaterialIcons name="security" size={16} color={colors.success} />
+            <Text style={styles.summaryFootText}>Bank-backed guarantees apply after day 5 overdue</Text>
+          </View>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Pressable onPress={() => router.push('/help')}>
+            <Text style={styles.sectionLink}>Help</Text>
+          </Pressable>
+        </View>
+        <View style={styles.quickActions}>
           {isSupplier ? (
             <>
-              <StatCard label="Pending POs" value={pendingPOs} variant={pendingPOs > 0 ? 'warning' : 'default'} />
-              <StatCard label="Confirmed POs" value={confirmedPOs} variant="success" />
-              <StatCard label="Overdue Amount" value={formatCurrency(overdueAmount)} variant={overdueAmount > 0 ? 'error' : 'default'} />
-              <StatCard
-                label="Supplier Rating"
-                value={`⭐ ${userProfile.business.rating.toFixed(1)}`}
-                subtitle={`${userProfile.business.reviewCount} reviews`}
-              />
+              <QuickAction icon="inventory" label="Add Product" onPress={() => router.push('/products')} />
+              <QuickAction icon="receipt-long" label="Confirm POs" onPress={() => router.push('/purchase-orders')} />
+              <QuickAction icon="request-quote" label="Invoices" onPress={() => router.push('/invoices')} />
+              <QuickAction icon="group" label="Buyers" onPress={() => router.push('/supplier/buyers')} />
             </>
           ) : (
             <>
-              <StatCard
-                label="Credit Available"
-                value={formatCurrency(userProfile.availableCredit || 0)}
-                variant="success"
-              />
-              <StatCard
-                label="Credit Used"
-                value={formatCurrency(userProfile.creditUsed || 0)}
-              />
-              <StatCard
-                label="Overdue Amount"
-                value={formatCurrency(overdueAmount)}
-                variant={overdueAmount > 0 ? 'error' : 'default'}
-              />
-              <StatCard
-                label="On-Time Rate"
-                value={`${userProfile.onTimePaymentRate || 100}%`}
-                variant={(userProfile.onTimePaymentRate || 100) >= 80 ? 'success' : 'warning'}
-              />
+              <QuickAction icon="shopping-bag" label="Marketplace" onPress={() => router.push('/marketplace')} />
+              <QuickAction icon="receipt-long" label="My Orders" onPress={() => router.push('/purchase-orders')} />
+              <QuickAction icon="payments" label="Pay Invoices" onPress={() => router.push('/invoices')} />
+              <QuickAction icon="storefront" label="Suppliers" onPress={() => router.push('/buyer/suppliers')} />
+            </>
+          )}
+        </View>
+
+        {/* Stats */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Performance</Text>
+          <Text style={styles.sectionHint}>Last 30 days</Text>
+        </View>
+        <View style={styles.statsGrid}>
+          {isSupplier ? (
+            <>
+              <StatItem>
+                <StatCard label="Pending POs" value={pendingPOs} variant={pendingPOs > 0 ? 'warning' : 'default'} />
+              </StatItem>
+              <StatItem>
+                <StatCard label="Confirmed POs" value={confirmedPOs} variant="success" />
+              </StatItem>
+              <StatItem>
+                <StatCard label="Active Buyers" value={activeBuyerCount} />
+              </StatItem>
+              <StatItem>
+                <StatCard label="Available Credit" value={formatCurrency(0)} subtitle="Mock" />
+              </StatItem>
+              <StatItem>
+                <StatCard label="Avg Payment Days" value="22" subtitle="Mock" />
+              </StatItem>
+              <StatItem>
+                <StatCard
+                  label="Supplier Rating"
+                  value={`⭐ ${userProfile.business.rating.toFixed(1)}`}
+                  subtitle={`${userProfile.business.reviewCount} reviews`}
+                />
+              </StatItem>
+            </>
+          ) : (
+            <>
+              <StatItem>
+                <StatCard label="Total Credit Limit" value={formatCurrency(userProfile.creditLimit || 0)} />
+              </StatItem>
+              <StatItem>
+                <StatCard label="Credit Used" value={formatCurrency(userProfile.creditUsed || 0)} />
+              </StatItem>
+              <StatItem>
+                <StatCard label="Credit Available" value={formatCurrency(userProfile.availableCredit || 0)} variant="success" />
+              </StatItem>
+              <StatItem>
+                <StatCard label="Active Suppliers" value={activeSupplierCount} />
+              </StatItem>
+              <StatItem>
+                <StatCard label="On-Time Rate" value={`${userProfile.onTimePaymentRate || 100}%`} variant={(userProfile.onTimePaymentRate || 100) >= 80 ? 'success' : 'warning'} />
+              </StatItem>
+              <StatItem>
+                <StatCard label="Credit Score" value={`${userProfile.creditScore || 0}/100`} variant={(userProfile.creditScore || 0) >= 80 ? 'success' : (userProfile.creditScore || 0) >= 60 ? 'warning' : 'error'} />
+              </StatItem>
             </>
           )}
         </View>
@@ -193,6 +269,19 @@ function FeatureItem({ icon, text }: { icon: any; text: string }) {
       <Text style={styles.featureText}>{text}</Text>
     </View>
   );
+}
+
+function QuickAction({ icon, label, onPress }: { icon: any; label: string; onPress: () => void }) {
+  return (
+    <Pressable style={({ pressed }) => [styles.quickCard, pressed && styles.pressed]} onPress={onPress}>
+      <MaterialIcons name={icon} size={22} color={colors.primary} />
+      <Text style={styles.quickLabel}>{label}</Text>
+    </Pressable>
+  );
+}
+
+function StatItem({ children }: { children: React.ReactNode }) {
+  return <View style={styles.statItem}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -273,6 +362,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.md,
   },
+  headerMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  iconButton: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.pill,
+    padding: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   businessName: {
     ...typography.h2,
     color: colors.text,
@@ -282,9 +389,91 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginLeft: spacing.xs,
   },
+  summaryCard: {
+    marginTop: spacing.lg,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.md,
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  summaryDivider: {
+    width: 1,
+    height: 48,
+    backgroundColor: colors.border,
+  },
+  summaryLabel: {
+    ...typography.caption,
+    color: colors.textSecondary,
+  },
+  summaryValue: {
+    ...typography.h2,
+    color: colors.text,
+    marginTop: spacing.xs,
+  },
+  summaryDanger: {
+    color: colors.error,
+  },
+  summaryFoot: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  summaryFootText: {
+    ...typography.small,
+    color: colors.textSecondary,
+  },
+  sectionHeader: {
+    marginTop: spacing.xl,
+    marginBottom: spacing.md,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  sectionLink: {
+    ...typography.caption,
+    color: colors.primary,
+  },
+  sectionHint: {
+    ...typography.caption,
+    color: colors.textSecondary,
+  },
+  quickActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+  },
+  quickCard: {
+    width: '47%',
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'flex-start',
+    ...shadows.sm,
+  },
+  quickLabel: {
+    ...typography.body,
+    color: colors.text,
+    marginTop: spacing.sm,
+  },
   statsGrid: {
     marginTop: spacing.lg,
     gap: spacing.md,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  statItem: {
+    width: '48%',
   },
   actions: {
     marginTop: spacing.xl,

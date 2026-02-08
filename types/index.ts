@@ -25,9 +25,11 @@ export interface Business {
   bankAccount: {
     accountNumber: string;
     ifscCode: string;
+    bankName?: string;
     accountHolderName: string;
   };
   isVerified: boolean;
+  verificationStatus: 'PENDING' | 'VERIFIED' | 'REJECTED';
   rating: number; // 1-5
   reviewCount: number;
   createdAt: string;
@@ -136,4 +138,6 @@ export interface UserProfile {
   overdueAmount: number;
   onTimePaymentRate?: number; // For buyers
   creditScore?: number;       // For buyers, 0-100
+  totalTransactions?: number;
+  transactionHistoryMonths?: number;
 }

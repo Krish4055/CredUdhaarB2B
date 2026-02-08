@@ -9,6 +9,7 @@ interface InputProps {
   placeholder?: string;
   keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad';
   multiline?: boolean;
+  secureTextEntry?: boolean;
   error?: string;
   required?: boolean;
   maxLength?: number;
@@ -21,6 +22,7 @@ export function Input({
   placeholder,
   keyboardType = 'default',
   multiline = false,
+  secureTextEntry = false,
   error,
   required = false,
   maxLength,
@@ -39,6 +41,7 @@ export function Input({
         placeholderTextColor={colors.textTertiary}
         keyboardType={keyboardType}
         multiline={multiline}
+        secureTextEntry={secureTextEntry}
         maxLength={maxLength}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}

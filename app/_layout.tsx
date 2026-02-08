@@ -17,6 +17,14 @@ export default function RootLayout() {
             <Stack.Screen name="purchase-orders" />
             <Stack.Screen name="invoices" />
             <Stack.Screen name="profile" />
+            <Stack.Screen name="login" />
+            <Stack.Screen name="forgot-password" />
+            <Stack.Screen name="terms" />
+            <Stack.Screen name="about" />
+            <Stack.Screen name="notifications" />
+            <Stack.Screen name="help" />
+            <Stack.Screen name="supplier" />
+            <Stack.Screen name="buyer" />
           </Stack>
         </AppProvider>
       </SafeAreaProvider>

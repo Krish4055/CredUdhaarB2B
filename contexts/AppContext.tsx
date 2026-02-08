@@ -2,7 +2,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { UserProfile, Product, PurchaseOrder, Invoice, Payment, Business } from '../types';
 import { storage } from '../services/storage';
-import { generateMockSuppliers, generateMockProducts } from '../services/mockData';
+import { generateMockSuppliers, generateMockProducts, calculateCreditScore, calculateDefaultCreditLine } from '../services/mockData';
 
 interface AppContextType {
   // User
@@ -138,6 +138,58 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const updated = [...payments, payment];
     setPayments(updated);
     await storage.savePayments(updated);
+
+    if (!userProfile || userProfile.role !== 'BUYER') return;
+
+    const invoice = invoices.find((inv) => inv.id === payment.invoiceId);
+    if (!invoice || invoice.buyerId !== userProfile.business.id) return;
+
+    const paidDate = new Date(payment.createdAt);
+    const dueDate = new Date(invoice.dueDate);
+    const onTime = paidDate.getTime() <= dueDate.getTime();
+
+    const buyerInvoices = invoices.filter((inv) => inv.buyerId === userProfile.business.id);
+    const paidInvoices = buyerInvoices.filter((inv) => inv.status === 'PAID');
+    const onTimeCount = paidInvoices.filter((inv) => {
+      const lastPayment = updated.find((p) => p.invoiceId === inv.id);
+      if (!lastPayment) return false;
+      return new Date(lastPayment.createdAt).getTime() <= new Date(inv.dueDate).getTime();
+    }).length;
+
+    const onTimePaymentRate = paidInvoices.length > 0
+      ? Math.round((onTimeCount / paidInvoices.length) * 100)
+      : 100;
+
+    const firstInvoiceDate = buyerInvoices.length > 0
+      ? new Date(buyerInvoices[0].createdAt)
+      : new Date();
+    const now = new Date();
+    const monthsDiff = Math.max(0, (now.getFullYear() - firstInvoiceDate.getFullYear()) * 12 + (now.getMonth() - firstInvoiceDate.getMonth()));
+
+    const businessAgeYears = Math.max(0, new Date().getFullYear() - userProfile.business.yearEstablished);
+    const creditScore = calculateCreditScore({
+      onTimePaymentRate,
+      annualTurnover: userProfile.business.annualTurnover,
+      transactionHistoryMonths: monthsDiff,
+      businessAgeYears,
+    });
+
+    const creditLimit = userProfile.creditLimit ?? calculateDefaultCreditLine(userProfile.business.annualTurnover, creditScore);
+    const creditUsed = Math.max(0, (userProfile.creditUsed || 0) - (onTime ? payment.amount : 0));
+    const availableCredit = Math.max(0, creditLimit - creditUsed);
+
+    const updatedProfile = {
+      ...userProfile,
+      creditScore,
+      creditLimit,
+      creditUsed,
+      availableCredit,
+      onTimePaymentRate,
+      totalTransactions: (userProfile.totalTransactions || 0) + 1,
+      transactionHistoryMonths: monthsDiff,
+    };
+
+    await setUserProfile(updatedProfile);
   };
 
   const logout = async () => {
