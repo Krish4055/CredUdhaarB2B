@@ -13,6 +13,7 @@ interface InputProps {
   error?: string;
   required?: boolean;
   maxLength?: number;
+  numberOfLines?: number;
 }
 
 export function Input({
@@ -26,6 +27,7 @@ export function Input({
   error,
   required = false,
   maxLength,
+  numberOfLines,
 }: InputProps) {
   return (
     <View style={styles.container}>
@@ -43,6 +45,7 @@ export function Input({
         multiline={multiline}
         secureTextEntry={secureTextEntry}
         maxLength={maxLength}
+        numberOfLines={numberOfLines}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
       {maxLength && (

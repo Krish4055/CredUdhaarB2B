@@ -27,7 +27,7 @@ export default function SupplierEditProduct() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Edit Product</Text>
-        <Badge label={product.isActive ? 'ACTIVE' : 'INACTIVE'} variant={product.isActive ? 'success' : 'default'} />
+        <Badge label={product.isActive ? 'ACTIVE' : 'INACTIVE'} variant={product.isActive ? 'success' : 'error'} />
 
         <View style={styles.card}>
           <Text style={styles.label}>Product Name</Text>

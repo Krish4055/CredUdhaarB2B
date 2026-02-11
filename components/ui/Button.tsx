@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { colors, typography, borderRadius, shadows } from '../../constants/theme';
 
 interface ButtonProps {
@@ -10,6 +11,7 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   fullWidth?: boolean;
+  icon?: keyof typeof MaterialIcons.glyphMap;
 }
 
 export function Button({
@@ -20,6 +22,7 @@ export function Button({
   loading = false,
   disabled = false,
   fullWidth = false,
+  icon,
 }: ButtonProps) {
   return (
     <Pressable
@@ -37,7 +40,17 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={variant === 'outline' ? colors.primary : colors.textInverse} />
       ) : (
-        <Text style={[styles.text, styles[`${variant}Text`]]}>{title}</Text>
+        <>
+          {icon && (
+            <MaterialIcons
+              name={icon}
+              size={20}
+              color={variant === 'outline' ? colors.primary : colors.textInverse}
+              style={{ marginRight: 8 }}
+            />
+          )}
+          <Text style={[styles.text, styles[`${variant}Text`]]}>{title}</Text>
+        </>
       )}
     </Pressable>
   );

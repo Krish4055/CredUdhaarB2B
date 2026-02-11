@@ -258,7 +258,6 @@ export default function RegisterScreen() {
               label="GST Number"
               value={formData.gstNumber}
               onChangeText={(text) => setFormData({ ...formData, gstNumber: text.toUpperCase() })}
-              placeholder="15-character GSTIN"
               placeholder="15-character GSTIN (Optional)"
               maxLength={15}
             />
@@ -267,7 +266,6 @@ export default function RegisterScreen() {
               label="PAN Number"
               value={formData.panNumber}
               onChangeText={(text) => setFormData({ ...formData, panNumber: text.toUpperCase() })}
-              placeholder="10-character PAN"
               placeholder="10-character PAN (Optional)"
               maxLength={10}
             />

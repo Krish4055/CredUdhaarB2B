@@ -15,11 +15,11 @@ export default function ProductsScreen() {
   const router = useRouter();
   const { showAlert } = useAlert();
   const { userProfile, products, addProduct, updateProduct } = useApp();
-  
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [step, setStep] = useState(1);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -111,7 +111,7 @@ export default function ProductsScreen() {
       await addProduct(newProduct);
       showAlert('Success', `Product created! SKU: ${formData.sku}`);
     }
-    
+
     resetForm();
   };
 
@@ -339,7 +339,7 @@ export default function ProductsScreen() {
                 <Button
                   title={product.isActive ? 'Deactivate' : 'Activate'}
                   onPress={() => handleToggleActive(product)}
-                  variant={product.isActive ? 'outline' : 'default'}
+                  variant={product.isActive ? 'outline' : 'primary'}
                 />
               </View>
             </View>

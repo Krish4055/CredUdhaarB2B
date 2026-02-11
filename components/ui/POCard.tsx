@@ -14,7 +14,7 @@ interface POCardProps {
 
 export function POCard({ po, onPress, viewMode }: POCardProps) {
   const statusColors = {
-    DRAFT: 'default',
+    DRAFT: 'info',
     PENDING: 'warning',
     CONFIRMED: 'info',
     SHIPPED: 'info',

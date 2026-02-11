@@ -28,10 +28,10 @@ export function ProductCard({ product, supplier, onPress, showSupplier = false }
           transition={200}
         />
       )}
-      
+
       <View style={styles.content}>
         <Text style={styles.name} numberOfLines={2}>{product.name}</Text>
-        
+
         {showSupplier && supplier && (
           <View style={styles.supplierRow}>
             <Text style={styles.supplier}>{supplier.legalName}</Text>
@@ -41,20 +41,20 @@ export function ProductCard({ product, supplier, onPress, showSupplier = false }
             <Text style={styles.rating}>⭐ {supplier.rating.toFixed(1)}</Text>
           </View>
         )}
-        
+
         <Text style={styles.category}>{product.category}</Text>
-        
+
         <View style={styles.priceRow}>
           <Text style={styles.price}>
             {formatCurrency(product.wholesalePrice)}/{product.unitType}
           </Text>
           {(product.bulkTier1 || product.bulkTier2) && (
-            <Badge label="Bulk pricing" variant="info" size="small" />
+            <Badge label="Bulk pricing" variant="info" small />
           )}
         </View>
-        
+
         <Text style={styles.moq}>MOQ: {product.moq} {product.unitType}</Text>
-        
+
         <View style={styles.footer}>
           <View style={styles.stockRow}>
             <MaterialIcons
@@ -69,8 +69,8 @@ export function ProductCard({ product, supplier, onPress, showSupplier = false }
               {product.currentStock > 0 ? `${product.currentStock} in stock` : 'Out of stock'}
             </Text>
           </View>
-          
-          {!product.isActive && <Badge label="Inactive" variant="default" size="small" />}
+
+          {!product.isActive && <Badge label="Inactive" variant="error" small />}
         </View>
       </View>
     </Pressable>
