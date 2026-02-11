@@ -63,11 +63,11 @@ export default function RegisterScreen() {
       showAlert('Validation Error', 'Business name must be 5-100 characters.');
       return false;
     }
-    if (!isValidGST(formData.gstNumber)) {
+    if (formData.gstNumber && !isValidGST(formData.gstNumber)) {
       showAlert('Validation Error', 'GST number format is invalid.');
       return false;
     }
-    if (!isValidPAN(formData.panNumber)) {
+    if (formData.panNumber && !isValidPAN(formData.panNumber)) {
       showAlert('Validation Error', 'PAN number format is invalid.');
       return false;
     }
@@ -157,8 +157,8 @@ export default function RegisterScreen() {
       id: `BUS${Date.now()}`,
       legalName: formData.legalName,
       businessType: formData.businessType,
-      gstNumber: formData.gstNumber.toUpperCase(),
-      panNumber: formData.panNumber.toUpperCase(),
+      gstNumber: formData.gstNumber ? formData.gstNumber.toUpperCase() : '',
+      panNumber: formData.panNumber ? formData.panNumber.toUpperCase() : '',
       yearEstablished: year,
       annualTurnover: formData.annualTurnover,
       contactName: formData.contactName,
@@ -259,7 +259,7 @@ export default function RegisterScreen() {
               value={formData.gstNumber}
               onChangeText={(text) => setFormData({ ...formData, gstNumber: text.toUpperCase() })}
               placeholder="15-character GSTIN"
-              required
+              placeholder="15-character GSTIN (Optional)"
               maxLength={15}
             />
 
@@ -268,7 +268,7 @@ export default function RegisterScreen() {
               value={formData.panNumber}
               onChangeText={(text) => setFormData({ ...formData, panNumber: text.toUpperCase() })}
               placeholder="10-character PAN"
-              required
+              placeholder="10-character PAN (Optional)"
               maxLength={10}
             />
 

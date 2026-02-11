@@ -9,8 +9,8 @@ export interface Business {
   id: string;
   legalName: string;
   businessType: BusinessType;
-  gstNumber: string;
-  panNumber: string;
+  gstNumber?: string;
+  panNumber?: string;
   yearEstablished: number;
   annualTurnover: AnnualTurnover;
   contactName: string;
