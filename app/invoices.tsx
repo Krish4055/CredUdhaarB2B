@@ -22,14 +22,10 @@ export default function InvoicesScreen() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('UPI');
   const [paymentReference, setPaymentReference] = useState('');
 
-  if (!userProfile) {
-    return <View style={[styles.container, { paddingTop: insets.top }]} />;
-  }
+  const isSupplier = userProfile?.role === 'SUPPLIER';
 
-  const isSupplier = userProfile.role === 'SUPPLIER';
-  
   const myInvoices = invoices.filter((inv) =>
-    isSupplier ? inv.supplierId === userProfile.business.id : inv.buyerId === userProfile.business.id
+    userProfile ? (isSupplier ? inv.supplierId === userProfile.business.id : inv.buyerId === userProfile.business.id) : false
   );
 
   // Auto-update overdue status
@@ -39,7 +35,11 @@ export default function InvoicesScreen() {
         updateInvoice(inv.id, { status: 'OVERDUE' });
       }
     });
-  }, []);
+  }, [myInvoices, updateInvoice]);
+
+  if (!userProfile) {
+    return <View style={[styles.container, { paddingTop: insets.top }]} />;
+  }
 
   const filteredInvoices = selectedStatus === 'ALL'
     ? myInvoices

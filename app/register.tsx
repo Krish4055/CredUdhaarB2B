@@ -58,62 +58,9 @@ export default function RegisterScreen() {
 
   const bankName = formData.ifscCode ? getBankNameFromIFSC(formData.ifscCode) : '';
 
-  const validateStep1 = () => {
-    if (formData.legalName.length < 5 || formData.legalName.length > 100) {
-      showAlert('Validation Error', 'Business name must be 5-100 characters.');
-      return false;
-    }
-    if (formData.gstNumber && !isValidGST(formData.gstNumber)) {
-      showAlert('Validation Error', 'GST number format is invalid.');
-      return false;
-    }
-    if (formData.panNumber && !isValidPAN(formData.panNumber)) {
-      showAlert('Validation Error', 'PAN number format is invalid.');
-      return false;
-    }
-    const year = parseInt(formData.yearEstablished);
-    if (Number.isNaN(year) || year < 1980 || year > 2025) {
-      showAlert('Validation Error', 'Year established must be between 1980 and 2025.');
-      return false;
-    }
-    return true;
-  };
-
-  const validateStep2 = () => {
-    if (formData.contactName.length < 3 || formData.contactName.length > 50) {
-      showAlert('Validation Error', 'Contact name must be 3-50 characters.');
-      return false;
-    }
-    if (!isValidPhone(formData.contactPhone)) {
-      showAlert('Validation Error', 'Phone must be 10 digits and start with 6-9.');
-      return false;
-    }
-    if (!isValidEmail(formData.contactEmail)) {
-      showAlert('Validation Error', 'Email format is invalid.');
-      return false;
-    }
-    return true;
-  };
-
-  const validateStep3 = () => {
-    if (!formData.street || !formData.city || !formData.state || !formData.pincode) {
-      showAlert('Validation Error', 'Complete business address is required.');
-      return false;
-    }
-    if (!isValidAccountNumber(formData.accountNumber)) {
-      showAlert('Validation Error', 'Account number must be 9-18 digits.');
-      return false;
-    }
-    if (!isValidIFSC(formData.ifscCode)) {
-      showAlert('Validation Error', 'IFSC code format is invalid.');
-      return false;
-    }
-    if (formData.accountHolderName.trim() !== formData.legalName.trim()) {
-      showAlert('Validation Error', 'Account holder name must match business name.');
-      return false;
-    }
-    return true;
-  };
+  const validateStep1 = () => true;
+  const validateStep2 = () => true;
+  const validateStep3 = () => true;
 
   const validateStep4 = () => {
     if (!otpSent) {
@@ -122,10 +69,6 @@ export default function RegisterScreen() {
     }
     if (formData.otp !== '123456') {
       showAlert('OTP Invalid', 'Please enter the correct OTP (mock: 123456).');
-      return false;
-    }
-    if (!formData.emailVerified) {
-      showAlert('Email Verification', 'Please confirm email verification.');
       return false;
     }
     return true;
@@ -235,7 +178,7 @@ export default function RegisterScreen() {
               value={formData.legalName}
               onChangeText={(text) => setFormData({ ...formData, legalName: text })}
               placeholder="e.g., Raj Textiles Pvt Ltd"
-              required
+              required={false}
               maxLength={100}
             />
 
@@ -276,7 +219,7 @@ export default function RegisterScreen() {
               onChangeText={(text) => setFormData({ ...formData, yearEstablished: text })}
               placeholder="1980-2025"
               keyboardType="numeric"
-              required
+              required={false}
               maxLength={4}
             />
 
@@ -306,7 +249,7 @@ export default function RegisterScreen() {
               value={formData.contactName}
               onChangeText={(text) => setFormData({ ...formData, contactName: text })}
               placeholder="e.g., Rajesh Kumar"
-              required
+              required={false}
             />
 
             <Input
@@ -315,7 +258,7 @@ export default function RegisterScreen() {
               onChangeText={(text) => setFormData({ ...formData, contactPhone: text })}
               placeholder="10-digit mobile"
               keyboardType="phone-pad"
-              required
+              required={false}
               maxLength={10}
             />
 
@@ -325,7 +268,7 @@ export default function RegisterScreen() {
               onChangeText={(text) => setFormData({ ...formData, contactEmail: text })}
               placeholder="email@example.com"
               keyboardType="email-address"
-              required
+              required={false}
             />
 
             <Button title="Next" onPress={handleNext} fullWidth />
@@ -340,21 +283,21 @@ export default function RegisterScreen() {
               value={formData.street}
               onChangeText={(text) => setFormData({ ...formData, street: text })}
               placeholder="Street address"
-              required
+              required={false}
             />
             <Input
               label="City"
               value={formData.city}
               onChangeText={(text) => setFormData({ ...formData, city: text })}
               placeholder="City"
-              required
+              required={false}
             />
             <Input
               label="State"
               value={formData.state}
               onChangeText={(text) => setFormData({ ...formData, state: text })}
               placeholder="State"
-              required
+              required={false}
             />
             <Input
               label="Pincode"
@@ -362,7 +305,7 @@ export default function RegisterScreen() {
               onChangeText={(text) => setFormData({ ...formData, pincode: text })}
               placeholder="Pincode"
               keyboardType="numeric"
-              required
+              required={false}
               maxLength={6}
             />
 
@@ -373,7 +316,7 @@ export default function RegisterScreen() {
               onChangeText={(text) => setFormData({ ...formData, accountNumber: text })}
               placeholder="9-18 digits"
               keyboardType="numeric"
-              required
+              required={false}
               maxLength={18}
             />
             <Input
@@ -381,7 +324,7 @@ export default function RegisterScreen() {
               value={formData.ifscCode}
               onChangeText={(text) => setFormData({ ...formData, ifscCode: text.toUpperCase() })}
               placeholder="e.g., HDFC0001234"
-              required
+              required={false}
               maxLength={11}
             />
             {formData.ifscCode.length === 11 && (
@@ -392,7 +335,7 @@ export default function RegisterScreen() {
               value={formData.accountHolderName}
               onChangeText={(text) => setFormData({ ...formData, accountHolderName: text })}
               placeholder="Must match business name"
-              required
+              required={false}
             />
 
             <Button title="Next" onPress={handleNext} fullWidth />
@@ -414,7 +357,7 @@ export default function RegisterScreen() {
               placeholder="Enter OTP"
               keyboardType="numeric"
               maxLength={6}
-              required
+              required={false}
             />
 
             <Button title={otpSent ? 'OTP Sent' : 'Send OTP'} onPress={handleSendOtp} fullWidth />

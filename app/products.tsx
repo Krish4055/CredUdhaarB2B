@@ -64,16 +64,8 @@ export default function ProductsScreen() {
 
   const handleNext = () => {
     if (step === 1) {
-      if (!formData.name || !formData.description || !formData.sku || !formData.moq) {
-        showAlert('Validation Error', 'Please fill in all required fields');
-        return;
-      }
       setStep(2);
     } else if (step === 2) {
-      if (!formData.wholesalePrice || !formData.currentStock) {
-        showAlert('Validation Error', 'Please fill in all required fields');
-        return;
-      }
       setStep(3);
     } else if (step === 3) {
       handlePublish();
@@ -179,7 +171,7 @@ export default function ProductsScreen() {
                 value={formData.name}
                 onChangeText={(text) => setFormData({ ...formData, name: text })}
                 placeholder="e.g., Premium Cotton Fabric"
-                required
+                required={false}
               />
               <Input
                 label="Description"
@@ -188,14 +180,14 @@ export default function ProductsScreen() {
                 placeholder="Describe your product..."
                 multiline
                 numberOfLines={3}
-                required
+                required={false}
               />
               <Input
                 label="SKU / Product Code"
                 value={formData.sku}
                 onChangeText={(text) => setFormData({ ...formData, sku: text })}
                 placeholder="e.g., RAJ-COT-001"
-                required
+                required={false}
               />
               <Input
                 label="Minimum Order Quantity (MOQ)"
@@ -203,7 +195,7 @@ export default function ProductsScreen() {
                 onChangeText={(text) => setFormData({ ...formData, moq: text })}
                 placeholder="e.g., 500"
                 keyboardType="numeric"
-                required
+                required={false}
               />
             </>
           )}
@@ -216,7 +208,7 @@ export default function ProductsScreen() {
                 onChangeText={(text) => setFormData({ ...formData, wholesalePrice: text })}
                 placeholder="e.g., 120"
                 keyboardType="numeric"
-                required
+                required={false}
               />
               <Text style={styles.sectionTitle}>Bulk Discount Tier 1 (Optional)</Text>
               <Input
@@ -254,7 +246,7 @@ export default function ProductsScreen() {
                 onChangeText={(text) => setFormData({ ...formData, currentStock: text })}
                 placeholder="e.g., 15000"
                 keyboardType="numeric"
-                required
+                required={false}
               />
             </>
           )}

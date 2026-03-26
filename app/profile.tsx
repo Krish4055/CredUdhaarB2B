@@ -14,6 +14,20 @@ export default function ProfileScreen() {
   const { showAlert } = useAlert();
   const { userProfile, setUserProfile, logout } = useApp();
 
+  const [formData, setFormData] = useState({
+    legalName: userProfile?.business?.legalName || '',
+    contactName: userProfile?.business?.contactName || '',
+    contactEmail: userProfile?.business?.contactEmail || '',
+    contactPhone: userProfile?.business?.contactPhone || '',
+    city: userProfile?.business?.address?.city || '',
+    state: userProfile?.business?.address?.state || '',
+    street: userProfile?.business?.address?.street || '',
+    pincode: userProfile?.business?.address?.pincode || '',
+    accountNumber: userProfile?.business?.bankAccount?.accountNumber || '',
+    ifscCode: userProfile?.business?.bankAccount?.ifscCode || '',
+    accountHolderName: userProfile?.business?.bankAccount?.accountHolderName || '',
+  });
+
   if (!userProfile) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -22,20 +36,6 @@ export default function ProfileScreen() {
       </View>
     );
   }
-
-  const [formData, setFormData] = useState({
-    legalName: userProfile.business.legalName,
-    contactName: userProfile.business.contactName,
-    contactEmail: userProfile.business.contactEmail,
-    contactPhone: userProfile.business.contactPhone,
-    city: userProfile.business.address.city,
-    state: userProfile.business.address.state,
-    street: userProfile.business.address.street,
-    pincode: userProfile.business.address.pincode,
-    accountNumber: userProfile.business.bankAccount.accountNumber,
-    ifscCode: userProfile.business.bankAccount.ifscCode,
-    accountHolderName: userProfile.business.bankAccount.accountHolderName,
-  });
 
   const handleSave = async () => {
     const updated = {
@@ -86,10 +86,10 @@ export default function ProfileScreen() {
         </View>
 
         <Text style={styles.sectionTitle}>Business Details</Text>
-        <Input label="Business Legal Name" value={formData.legalName} onChangeText={(text) => setFormData({ ...formData, legalName: text })} required />
-        <Input label="Contact Name" value={formData.contactName} onChangeText={(text) => setFormData({ ...formData, contactName: text })} required />
-        <Input label="Contact Email" value={formData.contactEmail} onChangeText={(text) => setFormData({ ...formData, contactEmail: text })} required />
-        <Input label="Contact Phone" value={formData.contactPhone} onChangeText={(text) => setFormData({ ...formData, contactPhone: text })} required />
+        <Input label="Business Legal Name" value={formData.legalName} onChangeText={(text) => setFormData({ ...formData, legalName: text })} required={false} />
+        <Input label="Contact Name" value={formData.contactName} onChangeText={(text) => setFormData({ ...formData, contactName: text })} required={false} />
+        <Input label="Contact Email" value={formData.contactEmail} onChangeText={(text) => setFormData({ ...formData, contactEmail: text })} required={false} />
+        <Input label="Contact Phone" value={formData.contactPhone} onChangeText={(text) => setFormData({ ...formData, contactPhone: text })} required={false} />
 
         <Text style={styles.sectionTitle}>Address</Text>
         <Input label="Street Address" value={formData.street} onChangeText={(text) => setFormData({ ...formData, street: text })} />

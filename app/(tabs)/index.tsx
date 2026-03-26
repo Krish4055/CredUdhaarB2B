@@ -37,7 +37,7 @@ export default function HomeScreen() {
               onPress={() => router.push('/register?role=SUPPLIER')}
             >
               <MaterialIcons name="storefront" size={48} color={colors.textInverse} />
-              <Text style={styles.roleTitle}>I'm a Supplier</Text>
+              <Text style={styles.roleTitle}>I&apos;m a Supplier</Text>
               <Text style={styles.roleDesc}>
                 List products, manage orders, receive payments with bank guarantee
               </Text>
@@ -52,7 +52,7 @@ export default function HomeScreen() {
               onPress={() => router.push('/register?role=BUYER')}
             >
               <MaterialIcons name="shopping-cart" size={48} color={colors.textInverse} />
-              <Text style={styles.roleTitle}>I'm a Buyer</Text>
+              <Text style={styles.roleTitle}>I&apos;m a Buyer</Text>
               <Text style={styles.roleDesc}>
                 Browse products, place orders, build credit history with flexible payment terms
               </Text>
